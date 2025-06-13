@@ -23,7 +23,10 @@ const app = new Hono();
 app.get("/", (c) => c.text("Hello World!!"));
 
 app.post("/mcp", async (c) => {
-	return BlueSkyMCP.serve("/mcp").fetch(c.req.raw, c.env, c.executionCtx);
+	return BlueSkyMCP.serve("/mcp").fetch(c.req.raw, c.env, {
+		...c.executionCtx,
+		props: {},
+	});
 });
 
 // app.get("/sse/*", async (c) => {

@@ -30,10 +30,6 @@
 	"durable_objects": {
 		"bindings": [
 			{
-				"name": "BlueSkyMCP",
-				"class_name": "BlueSkyMCP"
-			},
-			{
 				"name": "MCP_OBJECT",
 				"class_name": "BlueSkyMCP"
 			}

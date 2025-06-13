@@ -7,7 +7,8 @@
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest",
-		"cf-typegen": "wrangler types"
+		"cf-typegen": "wrangler types",
+		"inspector": "mcp-inspector"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
@@ -15,5 +16,13 @@
 		"typescript": "^5.5.2",
 		"vitest": "~3.2.0",
 		"wrangler": "^4.20.0"
+	},
+	"dependencies": {
+		"@atproto/api": "^0.15.14",
+		"@modelcontextprotocol/inspector": "^0.14.0",
+		"@modelcontextprotocol/sdk": "^1.12.1",
+		"agents": "^0.0.95",
+		"hono": "^4.7.11",
+		"zod": "^3.25.63"
 	}
 }

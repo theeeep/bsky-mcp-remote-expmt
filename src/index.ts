@@ -4,25 +4,33 @@ import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
 import { z } from "zod";
 
-export class BlueSkyMCP extends McpAgent {
+export class BlueSkyMCP extends McpAgent<Env> {
 	server = new McpServer({ name: "BlueSky MCP Agent", version: "1.0.0" });
 	agent: AtpAgent | undefined;
 
 	async init() {
 		this.agent = new AtpAgent({ service: "https://bsky.social" });
-		// this.agent.login({})
 
-		this.server.tool("searchPost", { query: z.string() }, async ({ query }) => {
-			if (!this.agent) {
-				return {
-					content: [{ type: "text", text: "Agent not initialized" }],
-				};
-			}
-			const result = this.agent.app.bsky.feed.searchPosts({ q: query });
-			return {
-				content: [{ type: "text", text: JSON.stringify(result) }],
-			};
+		await this.agent.login({
+			identifier: this.env.BLUESKY_IDENTIFIERS,
+			password: this.env.BLUESKY_PASSWORD,
 		});
+
+		this.server.tool(
+			"searchPosts",
+			{ query: z.string() },
+			async ({ query }) => {
+				if (!this.agent) {
+					return {
+						content: [{ type: "text", text: "Agent not initialized" }],
+					};
+				}
+				const result = await this.agent.app.bsky.feed.searchPosts({ q: query });
+				return {
+					content: [{ type: "text", text: JSON.stringify(result) }],
+				};
+			},
+		);
 	}
 }
 

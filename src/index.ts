@@ -1,3 +1,4 @@
+import { AtpAgent } from "@atproto/api";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
@@ -5,16 +6,23 @@ import { z } from "zod";
 
 export class BlueSkyMCP extends McpAgent {
 	server = new McpServer({ name: "BlueSky MCP Agent", version: "1.0.0" });
+	agent: AtpAgent | undefined;
 
 	async init() {
-		this.server.tool(
-			"add",
-			{ a: z.number(), b: z.number(), c: z.number() },
-			async ({ a, b, c }) => ({
-				content: [{ type: "text", text: String(a + b + c) }],
-			}),
-		);
-		1;
+		this.agent = new AtpAgent({ service: "https://bsky.social" });
+		// this.agent.login({})
+
+		this.server.tool("searchPost", { query: z.string() }, async ({ query }) => {
+			if (!this.agent) {
+				return {
+					content: [{ type: "text", text: "Agent not initialized" }],
+				};
+			}
+			const result = this.agent.app.bsky.feed.searchPosts({ q: query });
+			return {
+				content: [{ type: "text", text: JSON.stringify(result) }],
+			};
+		});
 	}
 }
 
@@ -28,10 +36,6 @@ app.post("/mcp", async (c) => {
 		props: {},
 	});
 });
-
-// app.get("/sse/*", async (c) => {
-// 	return BlueSkyMCP.serve("/sse").fetch(c.req.raw, c.env, c.executionCtx);
-// });
 
 export default {
 	fetch: app.fetch,
